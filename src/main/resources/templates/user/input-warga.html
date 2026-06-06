@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${isEdit} ? 'Edit Data Warga - Bank Sampah' : 'Input Data Warga - Bank Sampah'"></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container-main {
+            width: 100%;
+            max-width: 500px;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-radius: 15px;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #212529 0%, #343a40 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 24px;
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .card-header p {
+            margin: 5px 0 0 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        .card-body {
+            padding: 32px;
+        }
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #212529;
+            font-size: 0.95rem;
+        }
+        .form-control, .form-control:focus {
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        }
+        .input-group-text {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            color: #6c757d;
+            border-radius: 8px 0 0 8px;
+        }
+        .input-group .form-control {
+            border-radius: 0 8px 8px 0;
+        }
+        .mb-form {
+            margin-bottom: 20px;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        .btn-back {
+            background: #6c757d;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 16px;
+        }
+        .btn-back:hover {
+            background: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+        .alert-info {
+            background: #e7f3ff;
+            border: 2px solid #667eea;
+            color: #0066cc;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        .alert-info .alert-icon {
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+        .textarea-form {
+            resize: vertical;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <div class="card">
+            <div class="card-header">
+                <h2 th:text="${isEdit} ? '✏️ Edit Data Warga' : '📝 Input Data Warga'"></h2>
+                <p th:text="${isEdit} ? 'Update informasi personal Anda' : 'Masukkan informasi personal Anda'"></p>
+            </div>
+            <div class="card-body">
+                
+                <!-- Info Alert -->
+                <div class="alert alert-info" role="alert">
+                    <span class="alert-icon">ℹ️</span>
+                    <strong>Penting!</strong> Data ini akan digunakan untuk pencatatan transaksi sampah Anda.
+                </div>
+
+                <!-- Form -->
+                <form th:action="@{/user/simpan-warga}" method="post" th:object="${warga}">
+                    
+                    <!-- Input ID (Hidden) -->
+                    <input type="hidden" th:field="*{idWarga}" />
+
+                    <!-- Nama Lengkap -->
+                    <div class="mb-form">
+                        <label for="nama" class="form-label">👤 Nama Lengkap</label>
+                        <div class="input-group">
+                            <span class="input-group-text">📛</span>
+                            <input 
+                                type="text" 
+                                id="nama"
+                                class="form-control" 
+                                th:field="*{nama}"
+                                placeholder="Masukkan nama lengkap Anda" 
+                                required>
+                        </div>
+                    </div>
+
+                    <!-- Alamat -->
+                    <div class="mb-form">
+                        <label for="alamat" class="form-label">📍 Alamat</label>
+                        <div class="input-group">
+                            <span class="input-group-text">🏠</span>
+                            <textarea 
+                                id="alamat"
+                                class="form-control textarea-form" 
+                                th:field="*{alamat}"
+                                placeholder="Masukkan alamat lengkap Anda" 
+                                required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- No. HP -->
+                    <div class="mb-form">
+                        <label for="noHp" class="form-label">📱 No. HP</label>
+                        <div class="input-group">
+                            <span class="input-group-text">☎️</span>
+                            <input 
+                                type="text" 
+                                id="noHp"
+                                class="form-control" 
+                                th:field="*{noHp}"
+                                placeholder="08xxxxxxxxxx" 
+                                required>
+                        </div>
+                    </div>
+
+                    <!-- Button Group -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-submit">
+                            <span th:text="${isEdit} ? '💾 Perbarui Data' : '✅ Simpan Data'"></span>
+                        </button>
+                    </div>
+
+                    <!-- Tombol Kembali -->
+                    <a href="/user/dashboard" class="btn-back">← Kembali ke Dashboard</a>
+
+                </form>
+
+                <!-- Help Text -->
+                <div class="mt-4 p-3 bg-light rounded-3" style="border-left: 4px solid #667eea;">
+                    <div class="small fw-semibold mb-2">❓ Bantuan</div>
+                    <ul class="small text-muted mb-0">
+                        <li>Pastikan data yang Anda masukkan sudah benar</li>
+                        <li>Nomor HP harus aktif untuk komunikasi penting</li>
+                        <li>Anda dapat mengubah data ini kapan saja</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-4 text-white small">
+            <p>🗑️ Bank Sampah Management System © 2026</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sampah - Bank Sampah</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f0f2f5; }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #212529;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #adb5bd;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+            border-radius: 6px;
+            margin: 2px 10px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #343a40;
+            color: white;
+        }
+        .sidebar .brand {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 10px 20px 20px;
+            border-bottom: 1px solid #343a40;
+            margin-bottom: 10px;
+        }
+        .topbar {
+            background: white;
+            padding: 12px 24px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 10px;
+        }
+        .card-header {
+            background-color: #212529;
+            color: white;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .table thead { background: #f1f1f1; }
+        .form-control:focus, .form-select:focus {
+            border-color: #212529;
+            box-shadow: 0 0 0 0.2rem rgba(33,37,41,0.12);
+        }
+        .input-group-text {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+            color: #6c757d;
+        }
+        .kategori-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: #212529;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar" style="width: 220px; min-width: 220px;">
+        <div class="brand">🗑️ Bank Sampah</div>
+        <a href="/admin/dashboard">📊 Dashboard</a>
+        <a href="/admin/warga">👥 Warga</a>
+        <a href="/admin/sampah" class="active">🗂️ Sampah</a>
+        <a href="/admin/kategori">📁 Kategori</a>
+        <a href="/admin/transaksi">📋 Transaksi</a>
+        <a href="/admin/pembayaran">💰 Pembayaran</a>
+        <hr style="border-color: #343a40; margin: 10px;">
+        <a href="/logout" style="color: #dc3545;">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1">
+        <div class="topbar">
+            <strong>Kelola Sampah</strong>
+            <span class="text-muted small">Manajemen jenis sampah 🗂️</span>
+        </div>
+        <div class="p-4">
+            <div class="row g-4">
+
+                <!-- Form Tambah -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center gap-2">
+                            <span>🗂️</span> Tambah Sampah
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/sampah/simpan}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold small">Kategori</label>
+                                    <select class="form-select" name="kategoriSampah.idKategori" required>
+                                        <option value="">-- Pilih Kategori --</option>
+                                        <option th:each="k : ${kategoriList}"
+                                                th:value="${k.idKategori}"
+                                                th:text="${k.namaKategori}">
+                                        </option>
+                                    </select>
+                                    <div class="form-text">
+                                        Belum ada kategori? <a href="/admin/kategori" class="text-dark fw-semibold">Tambah di sini</a>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold small">Berat (kg)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">⚖️</span>
+                                        <input type="number" step="0.01" class="form-control"
+                                               name="berat" placeholder="0.00" required>
+                                        <span class="input-group-text">kg</span>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold small">Harga per Kg</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="number" class="form-control"
+                                               name="hargaPerKg" placeholder="0" required>
+                                        <span class="input-group-text">/kg</span>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-dark w-100">
+                                    ＋ Simpan Data Sampah
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Info card -->
+                    <div class="mt-3 p-3 bg-white rounded-3 shadow-sm" style="border-left: 4px solid #212529;">
+                        <div class="small fw-semibold mb-1">ℹ️ Info</div>
+                        <div class="small text-muted">
+                            Harga per kg digunakan untuk menghitung otomatis total pembayaran warga.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabel -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>📋 Daftar Sampah</span>
+                            <span class="badge bg-secondary rounded-pill"
+                                  th:text="${sampahList != null ? sampahList.size() + ' data' : '0 data'}">
+                                0 data
+                            </span>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-3">#</th>
+                                        <th>Kategori</th>
+                                        <th>Berat</th>
+                                        <th>Harga/Kg</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(sampahList)}">
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <div style="font-size:2rem;">🗑️</div>
+                                            Belum ada data sampah
+                                        </td>
+                                    </tr>
+                                    <tr th:each="s, i : ${sampahList}">
+                                        <td class="ps-3 text-muted small" th:text="${i.count}"></td>
+                                        <td>
+                                            <span class="kategori-badge"
+                                                  th:text="${s.kategoriSampah != null ? s.kategoriSampah.namaKategori : '-'}">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold" th:text="${s.berat}"></span>
+                                            <span class="text-muted small"> kg</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-success fw-semibold"
+                                                  th:text="'Rp ' + ${#numbers.formatInteger(s.hargaPerKg, 0, 'COMMA')}">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/admin/sampah/hapus/{id}(id=${s.idSampah})}"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Hapus data sampah ini?')">Hapus</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
